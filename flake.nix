@@ -1,5 +1,5 @@
 {
-  description = "snowgen dev flake";
+  description = "python base flake";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";

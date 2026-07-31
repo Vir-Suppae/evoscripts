@@ -9,7 +9,7 @@ def sanitize(code: str) -> str:
     return code
 
 def interpret(code: str, MAX_LENGTH: int) -> dict[str, int]:
-    registers = {char: 0 for char in "0123456789ABCDEFGHIJKLMNOPQRSTUV"}
+    registers = {char: 0 for char in " 0123456789ABCDEFGHIJKLMNOPQRSTUV"}
     code = sanitize(code)
 
     paired_code = list(zip(code[::2], code[1::2]))
@@ -38,12 +38,34 @@ def interpret(code: str, MAX_LENGTH: int) -> dict[str, int]:
                 pc += registers[r]
             case ("l", r) if registers.get(r) is not None:
                 pc = registers[r]
+            case (".", r) if registers.get(r) is not None:
+                registers[r] = 0
+                pc += 1
+            case ("[", r) if registers.get(r) is not None:
+                registers[" "] = registers[r]
+                pc += 1
+            case ("]", r) if registers.get(r) is not None:
+                registers[r] = registers[" "]
+                pc += 1
+            case ("p", r) if registers.get(r) is not None:
+                registers[" "] += registers[r]
+                pc += 1
+            case ("t", r) if registers.get(r) is not None:
+                registers[" "] *= registers[r]
+                pc += 1
+            case ("s", r) if registers.get(r) is not None:
+                registers[" "] -= registers[r]
+                pc += 1
+            case ("d", r) if registers.get(r) is not None:
+                if registers[r] != 0:
+                    registers[" "] //= registers[r]
+                pc += 1
             case (a, b) if registers.get(a) is not None and registers.get(b) is not None:
                 if registers[a] != registers[b]:
                     pc += 1
                 pc += 1
             case _:
-                raise NotImplementedError
+                raise SyntaxError(f"instruction {''.join(paired_code[pc])} not defined")
         step += 1
 
     return registers
